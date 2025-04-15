@@ -40,8 +40,10 @@
         <h2>Check Weather in Your Location</h2>
         <input type="text" id="locationInput" placeholder="Enter a city or place..." />
         <button onclick="getWeather()">Get Weather</button>
+        <button id="toggleVoiceBtn" onclick="toggleVoice()">Enable Voice</button>
         <div id="weatherResult"></div>
-      </section>
+    </section>
+
       
 
     
@@ -54,63 +56,109 @@
 
 
 <script>
-    async function getWeather() {
-      const location = document.getElementById("locationInput").value.trim();
-    
-      if (!location) {
-        alert("Please enter a location.");
-        return;
-      }
-    
-      const apiKey = "7aa3dd67e473212297f01ab152ad4c57"; // <-- Replace this with your actual API key
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
-    
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          alert("Location not found. Please try again.");
-          return;
-        }
-    
-        const data = await response.json();
-        const temp = data.main.temp;
-        const description = data.weather[0].description;
-        const city = data.name;
-        const country = data.sys.country;
-    
-        let suggestion = "";
-        if (temp >= 30) {
-          suggestion = "💧 It’s hot. Water your crops generously.";
-        } else if (temp >= 20 && temp < 30) {
-          suggestion = "🌱 Ideal time to sow seeds.";
-        } else if (temp >= 10 && temp < 20) {
-          suggestion = "🌾 Good weather to add fertilizers.";
-        } else {
-          suggestion = "🧺 Consider reaping crops or protecting them from cold.";
-        }
-    
-        const now = new Date();
-        const timestamp = now.toLocaleString(); // Gives date + time in local format
+    let voiceEnabled = false; // Variable to track whether voice is enabled
 
-        // Create a new result container
-        const resultContainer = document.createElement("div");
-        resultContainer.className = "weather-result-box";
-        resultContainer.innerHTML = `
-          <h3>🌍 ${city}, ${country}</h3>
-          <p>📅 Requested At: <em>${timestamp}</em></p>
-          <p>🌡️ Temperature: <strong>${temp}°C</strong></p>
-          <p>🌤️ Condition: ${description}</p>
-          <p>🌾 <strong>Farming Advice:</strong> ${suggestion}</p>
-          <hr>
-        `;
-    
-        // Append result to the main result area
-        document.getElementById("weatherResult").prepend(resultContainer);
-      } catch (error) {
-        alert("An error occurred. Please try again later.");
-      }
+    // Function to toggle voice on/off
+    function toggleVoice() {
+        voiceEnabled = !voiceEnabled; // Toggle the voiceEnabled flag
+        const toggleBtn = document.getElementById("toggleVoiceBtn");
+        toggleBtn.innerText = voiceEnabled ? "Disable Voice" : "Enable Voice"; // Update button text based on state
     }
-    </script>
+
+    function getRecommendation(temp, description) {
+        if (temp >= 30 && description.includes("clear")) {
+            return "It's hot and clear. Water your crops.";
+        } else if (temp < 20 && description.includes("rain")) {
+            return "Rainy and cool — a good time to sow new crops.";
+        } else if (temp > 25 && description.includes("cloud")) {
+            return "Cloudy but warm — consider fertilizing your crops.";
+        } else if (temp >= 20 && temp <= 30) {
+            return "Conditions are moderate — ideal for reaping mature crops.";
+        } else {
+            return "Conditions aren't optimal — monitor and wait.";
+        }
+    }
+
+    function formatTime() {
+        const now = new Date();
+        return now.toLocaleString();
+    }
+
+    // Function to speak the text
+    function speakText(text) {
+        if (!voiceEnabled) return; // If voice is not enabled, don't speak
+
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = "en-US"; // Set language to English
+        window.speechSynthesis.speak(speech);
+    }
+
+    async function getWeather() {
+        const location = document.getElementById("locationInput").value;
+        const result = document.getElementById("weatherResult");
+
+        if (!location) {
+            result.innerText = "Please enter a location.";
+            return;
+        }
+
+        const apiKey = "7aa3dd67e473212297f01ab152ad4c57"; // <-- Replace with your actual key
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                result.innerText = "Location not found. Please try again.";
+                return;
+            }
+
+            const data = await response.json();
+            const temp = data.main.temp;
+            const description = data.weather[0].description;
+            const city = data.name;
+            const country = data.sys.country;
+            const timestamp = formatTime();
+            const advice = getRecommendation(temp, description);
+
+            // Clear previous results
+            result.innerHTML = "";
+
+            // Create dynamic content box
+            const infoBox = document.createElement("div");
+            infoBox.style.padding = "15px";
+            infoBox.style.marginTop = "20px";
+            infoBox.style.border = "1px solid #ccc";
+            infoBox.style.borderRadius = "10px";
+            infoBox.style.background = "#f5f5f5";
+
+            infoBox.innerHTML = `
+                <h3>Weather Report for ${city}, ${country}</h3>
+                <p>Requested at: <strong>${timestamp}</strong></p>
+                <p>Temperature: <strong>${temp}°C</strong></p>
+                <p>Condition: <strong>${description}</strong></p>
+                <hr>
+                <p>Recommendation: <strong>${advice}</strong></p>
+            `;
+
+            result.appendChild(infoBox);
+
+            // Speak the weather and recommendation if voice is enabled
+            const spokenText = `
+                Weather in ${city}, ${country}. 
+                Temperature: ${temp} degrees Celsius. 
+                Condition: ${description}. 
+                Recommendation: ${advice}. 
+                The request was made at ${timestamp}.
+            `;
+            speakText(spokenText);
+
+        } catch (error) {
+            result.innerText = "An error occurred. Please try again later.";
+        }
+    }
+</script>
+    
+  
     
     
 
