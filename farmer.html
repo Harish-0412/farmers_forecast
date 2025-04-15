@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<head>
+    <title>OverHead Headphone</title>
+    <link rel="website icon" type="png" href="Black White Minimalist Initials Monogram Jewelry Logo.png">  
+    <link rel="stylesheet" href="casscading.css" >
+    <link rel="stylesheet" href="java.js">
+</head>
+<body>
+    
+    <header class="header" id="header">
+        <h2 class="logo">Farmers  Forecast</h2>
+        <nav class="navigation">
+            <a href="https://harish-0412.github.io/Live-Wires-2.0/" class="active">Home</a>
+            <div class="dropdown-menu">
+                <a href="#" class="dropdown-toggle">Products</a>
+                <div class="dropdown-content">
+                    <a href="#">Ovr Headphones</a>
+                    <br><br>
+                    <a href="#">Televisions</a>
+                    <br><br>
+                    <a href="#">SmartPhone</a>
+                    <br><br>
+                    <a href="#">Mouse</a>
+                    <br><br>
+                    <a href="#">Keyboards</a>
+                    <br><br>
+                    
+                </div>
+            </div>
+            <a href="#">Cart</a>
+            <a href="#">Comments</a>
+        </nav>
+    </header>
+
+    <section class="title">
+        <h1>Weather Location</h1>
+    </section>
+
+    <section class="weather-box">
+        <h2>Check Weather in Your Location</h2>
+        <input type="text" id="locationInput" placeholder="Enter a city or place..." />
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="weatherResult"></div>
+      </section>
+      
+
+    
+        
+        <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g><g id="SVGRepo_iconCarrier"> <defs>  </defs> <g id="cart"> <circle r="1.91" cy="20.59" cx="10.07" class="cls-1"></circle> <circle r="1.91" cy="20.59" cx="18.66" class="cls-1"></circle> <path d="M.52,1.5H3.18a2.87,2.87,0,0,1,2.74,2L9.11,13.91H8.64A2.39,2.39,0,0,0,6.25,16.3h0a2.39,2.39,0,0,0,2.39,2.38h10" class="cls-1"></path> <polyline points="7.21 5.32 22.48 5.32 22.48 7.23 20.57 13.91 9.11 13.91" class="cls-1"></polyline> </g> </g></svg>
+      </button>
+    </a>
+    
+</section>
+
+
+<script>
+    async function getWeather() {
+      const location = document.getElementById("locationInput").value.trim();
+    
+      if (!location) {
+        alert("Please enter a location.");
+        return;
+      }
+    
+      const apiKey = "7aa3dd67e473212297f01ab152ad4c57"; // <-- Replace this with your actual API key
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+    
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          alert("Location not found. Please try again.");
+          return;
+        }
+    
+        const data = await response.json();
+        const temp = data.main.temp;
+        const description = data.weather[0].description;
+        const city = data.name;
+        const country = data.sys.country;
+    
+        let suggestion = "";
+        if (temp >= 30) {
+          suggestion = "💧 It’s hot. Water your crops generously.";
+        } else if (temp >= 20 && temp < 30) {
+          suggestion = "🌱 Ideal time to sow seeds.";
+        } else if (temp >= 10 && temp < 20) {
+          suggestion = "🌾 Good weather to add fertilizers.";
+        } else {
+          suggestion = "🧺 Consider reaping crops or protecting them from cold.";
+        }
+    
+        const now = new Date();
+        const timestamp = now.toLocaleString(); // Gives date + time in local format
+
+        // Create a new result container
+        const resultContainer = document.createElement("div");
+        resultContainer.className = "weather-result-box";
+        resultContainer.innerHTML = `
+          <h3>🌍 ${city}, ${country}</h3>
+          <p>📅 Requested At: <em>${timestamp}</em></p>
+          <p>🌡️ Temperature: <strong>${temp}°C</strong></p>
+          <p>🌤️ Condition: ${description}</p>
+          <p>🌾 <strong>Farming Advice:</strong> ${suggestion}</p>
+          <hr>
+        `;
+    
+        // Append result to the main result area
+        document.getElementById("weatherResult").prepend(resultContainer);
+      } catch (error) {
+        alert("An error occurred. Please try again later.");
+      }
+    }
+    </script>
+    
+    
+
+
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-left">
+            <h3>Live Wires</h3>
+            <p>&copy; 2024 Live Wires. All Rights Reserved.</p>
+        </div>
+        <div class="footer-middle">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="https://harish-0412.github.io/Live-Wires-2.0/">Home</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Cart</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="footer-right">
+            <h4>Contact</h4>
+            <p>Email: support@livewires.com</p>
+            <p>Phone: 9789570720</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
