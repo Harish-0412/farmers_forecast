@@ -37,5 +37,5 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         window.location.href = "farmer.html";
     }else {
         alert('Invalid username or password!');
-    }
+    }
 });
